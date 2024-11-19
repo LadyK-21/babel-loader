@@ -1,16 +1,12 @@
-import path from "path";
-import fs from "fs";
-import rimraf from "rimraf";
+import path from "node:path";
+import fs from "node:fs/promises";
 
-export default function createTestDirectory(baseDirectory, testTitle, cb) {
+export default async function createTestDirectory(baseDirectory, testTitle) {
   const directory = path.join(baseDirectory, escapeDirectory(testTitle));
 
-  rimraf(directory, err => {
-    if (err) return cb(err);
-    fs.mkdir(directory, { recursive: true }, mkdirErr =>
-      cb(mkdirErr, directory),
-    );
-  });
+  await fs.rm(directory, { recursive: true, force: true });
+  await fs.mkdir(directory, { recursive: true });
+  return directory;
 }
 
 function escapeDirectory(directory) {
